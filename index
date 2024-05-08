@@ -1,0 +1,56 @@
+<?php
+$connection = mysqli_connect("localhost", "root", "");
+mysqli_select_db($connection, "OII");
+
+$result = array();
+
+$q_individuali = <<<QUERY
+SELECT a.nome, a.cognome, p.voto
+FROM atleti AS a, partecipazioni AS p
+WHERE p.Atleta = a.ID AND p.Gara = 15 AND p.voto IS NOT NULL
+ORDER BY p.voto DESC
+LIMIT 1
+QUERY;
+$individuali = mysqli_fetch_array(mysqli_query($connection, $q_individuali));
+
+$q_squadre = <<<QUERY
+SELECT sq.nome, p.voto
+FROM squadre AS sq, partecipazioni AS p
+WHERE p.Squadra = sq.ID AND p.Gara = 30 AND p.voto IS NOT NULL
+ORDER BY p.voto DESC
+LIMIT 1
+QUERY;
+$squadre = mysqli_fetch_array(mysqli_query($connection, $q_squadre));
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home || OII</title>
+    <link rel="stylesheet" href="./styles/home/indexhome.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Home || OII</h1>
+            <p class="subtitle">Risultati delle gare:</p>
+        </div>
+
+        <div class="result">
+            <p>Vincitore gare individuali: <?php echo ($individuali) ? $individuali[0] . " " . $individuali[1] . " (" . $individuali[2] . "/100)" : "TBD"; ?></p>
+            <p>Vincitore gare a squadre: <?php echo ($squadre) ? $squadre[0] . " (" . $squadre[1] . "/100)" : "TBD"; ?></p>
+        </div>
+
+        <div class="button-container">
+            <a href="./individuali" class="button">Visualizza gare individuali</a>
+            <a href="./squadre" class="button">Visualizza gare a squadre</a>
+            <a href="./aggiunta" class="button">Inserimento atleti</a>
+        </div>
+    </div>
+</body>
+
+</html>
