@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inserimento dati || OII</title>
+    <link rel="stylesheet" href="../styles/aggiunta/indexaggiunta.css">
+</head>
+
+<body>
+    <?php
+    $connection = mysqli_connect("localhost", "root", "");
+    mysqli_select_db($connection, "OII");
+
+    if (isset($_POST["submit"])) {
+        $sede = $_POST["sede"];
+        $nome = $_POST["name"];
+        $cognome = $_POST["surname"];
+
+        $q_insert = "INSERT INTO atleti (Sede, nome, cognome) VALUES ($sede, \"$nome\", \"$cognome\")";
+        mysqli_query($connection, $q_insert);
+
+        $q_id_atleta = "SELECT ID FROM atleti WHERE nome = \"$nome\" AND cognome = \"$cognome\" AND Sede = $sede ORDER BY ID DESC LIMIT 1";
+        $id_atleta = mysqli_fetch_array(mysqli_query($connection, $q_id_atleta));
+
+        $q_id_gara = "SELECT ID FROM gara WHERE Sede = $sede AND fase = \"Scolastica\"";
+        $id_gara = mysqli_fetch_array(mysqli_query($connection, $q_id_gara));
+
+        $q_insert = "INSERT INTO partecipazioni (Atleta, Gara) VALUES ($id_atleta[0], $id_gara[0])";
+        mysqli_query($connection, $q_insert);
+    }
+    ?>
+    
+    <div class="container">
+        <form action="" method="post">
+            <label for="name">Nome: </label>
+            <input type="text" name="name" id="name" required>
+            <label for="surname">Cognome: </label>
+            <input type="text" name="surname" id="surname" required>
+            <label for="sede">Sede: </label>
+            <select name="sede" id="sede" required>
+                <?php
+                $q_scuole = "SELECT s.ID, s.nome FROM scuole AS s";
+                $scuole = mysqli_query($connection, $q_scuole);
+
+                while ($row = mysqli_fetch_array($scuole)) {
+                    echo "<option value=\"$row[0]\">$row[1]</option>";
+                }
+                ?>
+            </select>
+            <input type="submit" name="submit" value="Inserisci atleta">
+        </form>
+
+        <a href="../"><button>Torna alla home</button></a>
+    </div>
+</body>
+
+</html>
